@@ -28,12 +28,12 @@ clmath = CLMath
          verbosity &=
          help "Simple math on the command line" &=
          summary "clmath v0.0.1, (C) Rory Kelly" &=
-         details ["clmath performs simple math operations on a list of numbers",""
+         details ["clmath performs simple operations on a list of numbers",""
                  ,"For example, to sum a list from stdin:","  cat numbers.txt | clmath --sum"]
 
 mode = cmdArgsMode clmath
 
--- -- -- This function get passed to main -- -- -- 
+-- -- -- This function gets passed to main -- -- -- 
 libMain :: IO ()
 libMain = do 
     args <- cmdArgs clmath
@@ -55,7 +55,15 @@ getHandle fp | fp == "std" = return stdin
 
 -- return a list of floats from the input file string
 getData :: String -> [Float]
-getData s = map (\x -> read x :: Float) (words s)
+getData instr = map (\x -> read x :: Float) (words fstr)
+              where fstr = filter numFilter instr
+
+-- provide basic filtering of the input
+numFilter :: Char -> Bool
+numFilter = (\x -> x `elem` chars)
+            where chars = ['0','1','2','3','4','5',
+                           '6','7','8','9','.','e',
+                           'E','-','+',' ','\n']
 
 applyFuncs :: [([Float] -> String)] -> [Float] -> [String]
 applyFuncs (op:ops) num_list = (op num_list) : applyFuncs ops num_list
