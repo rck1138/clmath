@@ -8,37 +8,74 @@ module Lib
 import System.Console.CmdArgs
 import System.IO
 import Numeric.Statistics (average, avgdev)
+import qualified Language.Haskell.Interpreter as I
+import Control.Monad.IO.Class
+import Data.List (intercalate)
 
-data CLMath = CLMath { sum_  :: Bool
+data CLMath = Stream { sum_  :: Bool
                      , min_  :: Bool
                      , max_  :: Bool
                      , avg_  :: Bool
                      , dev_  :: Bool
                      , file_ :: FilePath
-                     } deriving (Data, Typeable, Show, Eq)
+                     } 
+            | Expr { e :: String }
+              deriving (Data, Typeable, Show, Eq)
 
-clmath = CLMath 
+stream = Stream 
          { sum_  = False &= help "Report sum of numbers in input list" 
          , min_  = False &= name "m" &= help "Report minimum number in input list"
          , max_  = False &= name "x" &= help "Report maximum number in input list"
          , avg_  = False &= help "Report mean value of numbers in input list"
-         , dev_  = False &= help "Report deviation of the mean for number in input list"
-         , file_ = "std" &= args &= typ "FILE" 
-         } &=
-         verbosity &=
-         help "Simple math on the command line" &=
-         summary "clmath v0.0.1, (C) Rory Kelly" &=
-         details ["clmath performs simple operations on a list of numbers",""
-                 ,"For example, to sum a list from stdin:","  cat numbers.txt | clmath --sum"]
+         , dev_  = False &= help "Report deviation of the mean for numbers in input list"
+         , file_ = "std" &= args &= typ "FILE"
+         } &= auto
+         
+expr = Expr {e = def &= typ "EXPR" &= args}
 
-mode = cmdArgsMode clmath
+mode = cmdArgsMode $ modes [stream, expr]
+     &= verbosity
+     &= help "Simple math on the command line"
+     &= summary "clmath v0.0.1, (C) Rory Kelly"
+     &= details ["clmath performs simple operations on a list of numbers",""
+                 ,"For example, to sum a list from stdin:","  cat numbers.txt | clmath --sum"]
 
 -- -- -- This function gets passed to main -- -- -- 
 libMain :: IO ()
 libMain = do 
-    args <- cmdArgs clmath
-    c <- getHandle (file_ args) >>= hGetContents 
-    putStr $ concat (applyFuncs (getOps args) (getData c))
+    args <- cmdArgs $ modes [stream, expr]
+    runCLMath args
+    -- c <- getHandle (file_ args) >>= hGetContents 
+    -- putStr $ concat (applyFuncs (getOps args) (getData c))
+
+-- process --
+runCLMath :: CLMath -> IO()
+runCLMath (Stream _ _ _ _ _ _) = print "Stream!"
+runCLMath (Expr e) = evalExpr e
+
+evalExpr :: String -> IO ()
+evalExpr str = do r <- I.runInterpreter (exprInt str)
+                  case r of
+                    Left err -> putStrLn $ errorString err
+                    Right () -> return ()       
+
+exprInt :: String -> I.Interpreter ()
+exprInt str =
+    do
+      I.setImports ["Prelude"]
+      say $ "Evaluating: " ++ str
+      a <- I.eval str
+      say $ show a
+
+say :: String -> I.Interpreter ()
+say = liftIO . putStrLn
+
+errorString :: I.InterpreterError -> String
+errorString (I.WontCompile es) = intercalate "\n" (header : map unbox es)
+  where
+    header = "ERROR: Won't compile:"
+    unbox (I.GhcError e) = e
+errorString e = show e
 
 -- given the argument settings, produce a list of operations to apply
 getOps :: CLMath -> [([Float] -> String)]

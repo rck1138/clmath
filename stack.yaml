@@ -41,6 +41,7 @@ packages:
 # (e.g., acme-missiles-0.3)
 extra-deps: 
 - hstats-0.3.0.1
+- hint-0.7.0
 
 # Override default flag values for local packages and extra-deps
 flags: {}

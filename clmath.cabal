@@ -19,6 +19,8 @@ library
   build-depends:       base >= 4.7 && <= 4.9
                      , cmdargs >= 0.10.10 
                      , hstats == 0.3.0.1
+                     , hint == 0.7.0
+                     , transformers >= 0.4.2.0
   default-language:    Haskell2010
 
 executable clmath
