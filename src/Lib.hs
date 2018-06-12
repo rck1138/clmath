@@ -4,7 +4,6 @@ module Lib
     ( libMain
     ) where
 
---import System.Environment (getArgs)
 import System.Console.CmdArgs
 import System.IO
 import Numeric.Statistics (average, avgdev)
@@ -42,16 +41,17 @@ mode = cmdArgsMode $ modes [stream, expr]
 
 -- -- -- This function gets passed to main -- -- -- 
 libMain :: IO ()
-libMain = do 
-    args <- cmdArgs $ modes [stream, expr]
-    runCLMath args
-    -- c <- getHandle (file_ args) >>= hGetContents 
-    -- putStr $ concat (applyFuncs (getOps args) (getData c))
+libMain = (cmdArgs . modes) [stream, expr] >>= runCLMath
 
 -- process --
 runCLMath :: CLMath -> IO()
-runCLMath (Stream _ _ _ _ _ _) = print "Stream!"
 runCLMath (Expr e) = evalExpr e
+runCLMath streamArgs = procStream streamArgs
+
+procStream :: CLMath -> IO ()
+procStream args = do
+  c <- getHandle (file_ args) >>= hGetContents
+  putStr $ concat (applyFuncs (getOps args) (getData c))
 
 evalExpr :: String -> IO ()
 evalExpr str = do r <- I.runInterpreter (exprInt str)
