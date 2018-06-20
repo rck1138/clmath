@@ -16,6 +16,10 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Lib
+                     , CLMath
+                     , ReduceMode
+                     , ExprMode
+                     , Utils
   build-depends:       base >= 4.7 && <= 4.9
                      , cmdargs >= 0.10.10 
                      , hstats == 0.3.0.1
