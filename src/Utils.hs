@@ -1,14 +1,15 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 module Utils
     (
       getData
     , getStrData
     , getHandle
     , numFilter
+    , streamFormat
     ) where
 
 import System.IO
 import Data.List (intercalate)
+import Data.String.Utils (replace)
 
 -- return a list of floats from the input file string
 getData :: String -> [Float]
@@ -32,3 +33,7 @@ numFilter = (\x -> x `elem` chars)
                            '6','7','8','9','.','e',
                            'E','-','+',' ','\n']
 
+-- formating function used from stream mode. Removes the list
+-- delimiters and outputs 1 number per line
+streamFormat :: String -> String
+streamFormat s = replace "," "\n" ((init . tail) s)

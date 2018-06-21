@@ -18,8 +18,10 @@ library
   exposed-modules:     Lib
                      , CLMath
                      , ExprMode
+                     , FilterMode
                      , ReduceMode
                      , StreamMode
+                     , Interpret
                      , Utils
   build-depends:       base >= 4.7 && <= 4.9
                      , MissingH == 1.4.0.1
