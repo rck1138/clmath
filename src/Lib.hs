@@ -7,10 +7,15 @@ module Lib
 
 import System.Console.CmdArgs
 import CLMath
-import ReduceMode
 import ExprMode
+import ReduceMode
+import StreamMode
 
 -- 
+expr = Expr
+       { expression_ = def &= typ "EXPRESSION" &= args
+       } &= help "Evaluate a simple arithmetic expression"
+
 reduce = Reduce 
          { sum_  = False &= help "Report sum of numbers in input list" 
          , min_  = False &= name "m" &= help "Report minimum number in input list"
@@ -21,12 +26,13 @@ reduce = Reduce
          } &= auto 
            &= help "Perform reductions on a stream of numbers"
 
-expr = Expr
-       { expression_ = def &= typ "EXPRESSION" &= args
-       } &= help "Evaluate a simple arithmetic expression"
+stream = Stream
+         { func_ = def &= typ "FUNCTION" &= argPos 0
+         , file_ = "std" &= args &= typ "FILE" &= argPos 1 &= opt "std"
+         } &= help "Apply a function to each member of an input stream"
 
 
-mode = cmdArgsMode $ modes [reduce, expr] &= summary "clmath v0.0.1, (C) Rory Kelly"
+mode = cmdArgsMode $ modes [expr, reduce, stream] &= summary "clmath v0.0.1, (C) Rory Kelly"
        &= verbosity
        &= help "Simple math on the command line"
        &= summary "clmath v0.0.1, (C) Rory Kelly"
@@ -37,8 +43,9 @@ libMain = cmdArgsRun mode >>= runCLMath
 
 -- process --
 runCLMath :: CLMath -> IO()
-runCLMath (Expr e) = evalExpr (e)
-runCLMath reduceArgs = runReduce reduceArgs
+runCLMath args@(Expr e) = evalExpr args
+runCLMath args@(Stream fn fi) = procStream args
+runCLMath args@(Reduce sm mn mx av dv fi) = runReduce args
 
 
 

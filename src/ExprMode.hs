@@ -8,12 +8,13 @@ module ExprMode
 import qualified Language.Haskell.Interpreter as I
 import Data.List (intercalate)
 import Control.Monad.IO.Class (liftIO)
+import CLMath
 
-evalExpr :: String -> IO ()
-evalExpr str = do r <- I.runInterpreter (exprInt str)
-                  case r of
-                    Left err -> putStrLn $ errorString err
-                    Right () -> return ()       
+evalExpr :: CLMath -> IO ()
+evalExpr (Expr e) = do r <- I.runInterpreter (exprInt e)
+                       case r of
+                         Left err -> putStrLn $ errorString err
+                         Right () -> return ()       
 
 exprInt :: String -> I.Interpreter ()
 exprInt str =

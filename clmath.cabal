@@ -17,10 +17,12 @@ library
   hs-source-dirs:      src
   exposed-modules:     Lib
                      , CLMath
-                     , ReduceMode
                      , ExprMode
+                     , ReduceMode
+                     , StreamMode
                      , Utils
   build-depends:       base >= 4.7 && <= 4.9
+                     , MissingH == 1.4.0.1
                      , cmdargs >= 0.10.10 
                      , hstats == 0.3.0.1
                      , hint == 0.7.0

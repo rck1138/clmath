@@ -8,7 +8,7 @@
 import System.IO
 import Numeric.Statistics (average, avgdev)
 import CLMath
-import Utils (numFilter)
+import Utils (getData, getHandle, numFilter)
 
 runReduce :: CLMath -> IO ()
 runReduce args = do
@@ -22,16 +22,6 @@ getOps a = (if sum_ a then [findSum] else [])
         ++ (if max_ a then [findMax] else [])
         ++ (if avg_ a then [findAvg] else [])
         ++ (if dev_ a then [findDev] else [])
-
--- get a handle to the file we want to process
-getHandle :: FilePath -> IO Handle
-getHandle fp | fp == "std" = return stdin
-             | otherwise = openFile fp ReadMode
-
--- return a list of floats from the input file string
-getData :: String -> [Float]
-getData instr = map (\x -> read x :: Float) (words fstr)
-              where fstr = filter numFilter instr
 
 applyFuncs :: [([Float] -> String)] -> [Float] -> [String]
 applyFuncs (op:ops) num_list = (op num_list) : applyFuncs ops num_list

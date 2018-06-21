@@ -8,12 +8,15 @@
 
 import System.Console.CmdArgs
 
-data CLMath = Reduce { sum_  :: Bool
+data CLMath = Expr { expression_ :: String }
+            | Reduce { sum_  :: Bool
                      , min_  :: Bool
                      , max_  :: Bool
                      , avg_  :: Bool
                      , dev_  :: Bool
                      , file_ :: FilePath
                      } 
-            | Expr { expression_ :: String }
+            | Stream { func_ :: String
+                     , file_ :: FilePath
+                     }
               deriving (Data, Typeable, Show, Eq)
