@@ -25,7 +25,7 @@ evalExpr :: String -> IO ()
 evalExpr str = do r <- I.runInterpreter (exprInt str)
                   case r of
                     Left err -> putStrLn $ errorString err
-                    Right s -> putStr $ replace "," "\n" ((init . tail) s)      
+                    Right s -> putStrLn $ replace "," "\n" ((init . tail) s)      
 
 exprInt :: String -> I.Interpreter (String)
 exprInt str =
