@@ -20,6 +20,7 @@ library
                      , ExprMode
                      , FilterMode
                      , ReduceMode
+                     , SortMode
                      , StreamMode
                      , Interpret
                      , Utils

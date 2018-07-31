@@ -23,4 +23,9 @@ data CLMath = Expr { expression_ :: String }
             | Stream { func_ :: String
                      , file_ :: FilePath
                      }
+            | Sort   { col_  :: Int
+                     , full_ :: Bool
+                     , file_ :: FilePath
+                     }
               deriving (Data, Typeable, Show, Eq)
+

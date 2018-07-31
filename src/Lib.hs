@@ -10,6 +10,7 @@ import ExprMode
 import FilterMode
 import ReduceMode
 import StreamMode
+import SortMode
 
 -- definition of modes --
 reduce = Reduce 
@@ -36,8 +37,14 @@ stream = Stream
          , file_ = "std" &= typ "FILE" &= argPos 1 &= opt "std"
          } &= help "Apply a function to each member of an input stream"
 
+sort = Sort 
+       { col_  = 1 &= name "c" &= typ "INTEGER" &= help "Column number (default: column 1)"
+       , full_ = False &= name "f" &= help "Print full line (default: no)"
+       , file_ = "std" &= typ "FILE" &= argPos 0 &= opt "std" 
+       } &= help "Sort an input stream by column"
 
-mode = cmdArgsMode $ modes [reduce, expr, filt, stream]
+
+mode = cmdArgsMode $ modes [reduce, expr, filt, stream, sort]
        &= verbosity
        &= help "Simple math from the command line" 
        &= summary "clmath v0.1.0, (C) Rory Kelly"
@@ -52,6 +59,7 @@ runCLMath args@(Expr _) = evalExpr args
 runCLMath args@(Filter _ _) = filtStream args
 runCLMath args@(Stream _ _) = procStream args
 runCLMath args@(Reduce _ _ _ _ _ _) = runReduce args
+runCLMath args@(Sort _ _ _) = runSort args
 
 
 
