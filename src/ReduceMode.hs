@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable, BangPatterns #-}
  
  module ReduceMode
     (
@@ -6,7 +6,8 @@
     ) where
 
 import System.IO
-import Numeric.Statistics (average, avgdev)
+import Data.List (foldl')
+--import Numeric.Statistics (average, avgdev)
 import CLMath
 import Utils (getData, getHandle, numFilter)
 
@@ -26,6 +27,22 @@ getOps a = (if sum_ a then [findSum] else [])
 applyFuncs :: [([Float] -> String)] -> [Float] -> [String]
 applyFuncs (op:ops) num_list = (op num_list) : applyFuncs ops num_list
 applyFuncs _ _           = []
+
+-- |Numerically stable mean
+mean :: Fractional a => [a] -> a
+mean x = fst $ foldl' addElement (0,0) x
+    where
+      addElement (!m,!n) x = (m + (x-m)/(n+1), n+1)
+
+-- |Same as 'mean'
+average :: Fractional a => [a] -> a
+average = mean
+
+-- | Average deviation
+avgdev :: (Floating a) => [a] -> a
+avgdev xs = mean $ map (\x -> abs(x - m)) xs
+    where
+      m = mean xs
 
 findSum :: [Float] -> String
 findSum l = "Sum: " ++ show (sum l) ++ "\n"

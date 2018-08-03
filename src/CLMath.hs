@@ -11,6 +11,8 @@ import System.Console.CmdArgs
 -- CLMath types for each possible program mode
 data CLMath = Expr { expression_ :: String }
             | Filter { pred_ :: String
+                     , col_  :: Int
+                     , full_ :: Bool
                      , file_ :: FilePath
                      }
             | Reduce { sum_  :: Bool

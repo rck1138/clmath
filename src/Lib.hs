@@ -29,6 +29,8 @@ expr = Expr
 
 filt = Filter
        { pred_ = def &= typ "PREDICATE" &= argPos 0
+       , col_  = 1 &= name "c" &= typ "INTEGER" &= help "Column number (default: column 1)"
+       , full_ = False &= name "f" &= help "Print full line (default: no)"
        , file_ = "std" &= typ "FILE" &= argPos 1 &= opt "std"
        } &= help "Filter an input stream with the supplied predicate"
 
@@ -56,7 +58,7 @@ libMain = cmdArgsRun mode >>= runCLMath
 -- run program in requested mode --
 runCLMath :: CLMath -> IO()
 runCLMath args@(Expr _) = evalExpr args
-runCLMath args@(Filter _ _) = filtStream args
+runCLMath args@(Filter _ _ _ _) = filtStream args
 runCLMath args@(Stream _ _) = procStream args
 runCLMath args@(Reduce _ _ _ _ _ _) = runReduce args
 runCLMath args@(Sort _ _ _) = runSort args
